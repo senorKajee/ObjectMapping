@@ -2,10 +2,22 @@ require 'csv'
 class Person
   attr_accessor :first_name, :last_name, :person_id
 
-  def initialize(first_name,last_name)
+  def initialize(first_name,last_name,person_id = rand(1..999))
     @first_name = first_name
     @last_name = last_name
-    @person_id = rand(1..999)
+    @person_id = person_id
+  end
+
+  def self.read(person_id)
+    file_name = "#{person_id}-file.csv"
+    if File.exists?(file_name)
+      File.open(file_name,'r') do |file|
+        record = CSV.parse(file.read)[0]
+        return Person.new(record[0],record[1],person_id)
+      end
+    else
+      puts "Person record does not exits"
+    end
   end
 
   def valid?
@@ -25,17 +37,19 @@ class Person
     end
   end
 
-  def save_to_file
+  def save
     File.open("#{person_id}-file.csv", "a") do |f|
       f.write(to_csv)
     end
   end
 end
-puts "first name last name"
-first_name = gets.chomp()
-last_name = gets.chomp()
+
+first_name = "Doom"
+last_name = "Fist"
+=begin
 person1 = Person.new(first_name,last_name)
 puts person1.first_name
 puts person1.last_name
 puts person1.valid?
-person1.save_to_file
+person1.save
+=end
