@@ -1,15 +1,33 @@
 require 'csv'
 class Person
   attr_accessor :first_name, :last_name, :person_id
+  attr_reader :file_name
 
   def initialize(first_name,last_name,person_id = rand(1..999))
     @first_name = first_name
     @last_name = last_name
     @person_id = person_id
+    @file_name = "#{person_id}-file.csv"
   end
 
+  def create
+    if !File.exist?(file_name)
+      save
+    else
+      puts "Can not create : File do exist for #{person_id}"
+    end
+  end
+
+  def update
+    if File.exist?(file_name)
+      save
+    else
+      puts "Can not update : File do not exist"
+      return false
+    end
+
+  end
   def self.read(person_id)
-    file_name = "#{person_id}-file.csv"
     if File.exists?(file_name)
       File.open(file_name,'r') do |file|
         record = CSV.parse(file.read)[0]
@@ -33,14 +51,16 @@ class Person
 
   def to_csv
     CSV.generate do |csv|
-      csv << [first_name,last_name,person_id]
+      csv << [first_name,last_name]
     end
   end
 
   def save
-    File.open("#{person_id}-file.csv", "a") do |f|
+    save_file = File.open("#{person_id}-file.csv", "a") do |f|
       f.write(to_csv)
     end
+    puts "File #{filename} saved for employee with ID #{person_id}"
+    return !save_file.nil?
   end
 end
 
