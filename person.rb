@@ -10,6 +10,10 @@ class Person
     @file_name = "#{person_id}-file.csv"
   end
 
+  def self.filename(person_id)
+    "#{person_id}-file.csv"
+  end
+
   def create
     if !File.exist?(file_name)
       save
@@ -27,8 +31,18 @@ class Person
     end
 
   end
+  def self.destroy(person_id)
+    file_name = Person.filename(person_id)
+    if File.exist?(file_name)
+      File.delete(file_name)
+    else
+      puts "Person record does not exits"
+    end
+  end
+
   def self.read(person_id)
-    if File.exists?(file_name)
+    file_name = Person.filename(person_id)
+    if File.exist?(file_name)
       File.open(file_name,'r') do |file|
         record = CSV.parse(file.read)[0]
         return Person.new(record[0],record[1],person_id)
@@ -56,10 +70,10 @@ class Person
   end
 
   def save
-    save_file = File.open("#{person_id}-file.csv", "a") do |f|
+    save_file = File.open("#{person_id}-file.csv", "w") do |f|
       f.write(to_csv)
     end
-    puts "File #{filename} saved for employee with ID #{person_id}"
+    puts "File #{file_name} saved for employee with ID #{person_id}"
     return !save_file.nil?
   end
 end
