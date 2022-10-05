@@ -15,6 +15,7 @@ class Person
   end
 
   def create
+    return false unless valid?
     if !File.exist?(file_name)
       save
     else
@@ -23,6 +24,7 @@ class Person
   end
 
   def update
+    return false unless valid?
     if File.exist?(file_name)
       save
     else
@@ -53,7 +55,12 @@ class Person
   end
 
   def valid?
-    (!first_name.nil? && first_name.length > 0) && (!last_name.nil? && last_name.length > 0)
+    if (!first_name.nil? && first_name.length > 0) && (!last_name.nil? && last_name.length > 0)
+      return true
+    else
+      puts "Person attribute is not valid"
+      return false
+    end
   end
   def walk
 
@@ -70,6 +77,7 @@ class Person
   end
 
   def save
+    return false unless valid?
     save_file = File.open("#{person_id}-file.csv", "w") do |f|
       f.write(to_csv)
     end
